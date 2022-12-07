@@ -19,7 +19,6 @@ async function checkForExistingComment(octokit, repo, owner, issueNumber, commen
 }
 
 async function run() {
-
   try {
     const { repo, payload } = github.context;
     const { owner, number: issueNumber } = payload.pull_request;
@@ -68,11 +67,9 @@ async function run() {
     core.setOutput('comment-id', comment.data.id);
 
     return comment;
-
   } catch (e) {
     core.setFailed(e.message);
   }
-
 }
 
 module.exports = { run };
