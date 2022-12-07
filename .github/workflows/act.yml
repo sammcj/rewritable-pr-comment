@@ -1,0 +1,37 @@
+# This workflow is for use locally using [act](https://github.com/nektos/act).
+
+on:
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  pull-requests: write
+  contents: write
+
+jobs:
+  run-local:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3
+        # with:
+        #   path: "rewritable-pr-comment"
+      - uses: actions/setup-node@8c91899e586c5b171469028077307d293428b516 # tag=v3
+        name: Set up Node.js
+        with:
+          node-version: 16
+
+      # Build
+      # Build
+      - name: "Install dependencies and build"
+        run: |
+          npm i -g npm@latest
+          npm ci
+          npm run build
+          npm run test
+      - name: test action locally
+        uses: ./
+        with:
+          GITHUB_TOKEN: "1234567890"
+          message: "this is a really cool sqs message"
+          ISSUE_ID: "2"
+          COMMENT_IDENTIFIER: "4YE2JbpAewMX4rxmRnWyoSXoAfaiZH19QDB2IR3OSJTxmjSu"

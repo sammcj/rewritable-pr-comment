@@ -5,7 +5,6 @@
 ### START GITHUB ACTIONS FILES ###
 
 **/node_modules
-!**/dist
 
 ### END GITHUB ACTIONS FILES ###
 
@@ -112,7 +111,6 @@ tmp/
 *.seed
 *.tgz
 **/.BUILD_COMPLETED
-**/.cache
 **/.filesystem
 **/.LAST_BUILD
 **/.local-npm
@@ -134,7 +132,6 @@ lib-cov
 
 # Build directories
 **/_build/
-**/dist
 build/
 out/
 target/

@@ -1,81 +1,89 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
-
+const context = require('@actions/github');
 const DEFAULT_COMMENT_IDENTIFIER = '4YE2JbpAewMX4rxmRnWyoSXoAfaiZH19QDB2IR3OSJTxmjSu';
 
-async function checkForExistingComment(octokit, repo, owner, issueNumber, commentIdentifier) {
-  const { data: existingComments } = await octokit.issues.listComments({
+async function checkForExistingComment(octokit, issue_number, commentIdentifier, repo, owner) {
+  // console log
+  console.log('Checking for existing comment');
+  const existingComments = await octokit.issues.listComments({
+    issue_number,
     repo,
     owner,
-    issue_number: issueNumber,
   });
 
-  let existingCommentId;
-  existingComments.forEach(({ body, id }) => {
-    if (body.includes(commentIdentifier)) existingCommentId = id;
-  });
+  if (!existingComments.data.length) {
+    return undefined;
+  }
 
+  let existingCommentId = undefined;
+  if (Array.isArray(existingComments.data)) {
+    existingComments.data.forEach(({ body, id }) => {
+      if (body.includes(commentIdentifier)) existingCommentId = id;
+    });
+  }
   return existingCommentId;
 }
 
 async function run() {
-
   try {
-    const { repo, payload } = github.context;
-    const { owner, number: issueNumber } = payload.pull_request;
+    // const context = github.context;
+    const repo = context.repo;
+    const owner = context.owner;
+    const commentMessage = core.getInput('message');
+    const commentId = core.getInput('COMMENT_IDENTIFIER')
+      ? core.getInput('COMMENT_IDENTIFIER')
+      : DEFAULT_COMMENT_IDENTIFIER;
+    const githubToken = core.getInput('GITHUB_TOKEN');
 
-    if (!issueNumber) {
+    console.log('context', context);
+
+    const issue_number = core.getInput('ISSUE_ID')
+      ? core.getInput('ISSUE_ID')
+      : context.payload.pull_request.number;
+
+    if (!issue_number) {
       core.setFailed('Action must run on a Pull Request.');
       return;
     }
 
-    const commentMessage = core.getInput('message');
-    const commentId = core.getInput('COMMENT_IDENTIFIER', { default: DEFAULT_COMMENT_IDENTIFIER });
-    const githubToken = core.getInput('GITHUB_TOKEN');
-
-    const octokit = new github.GitHub(githubToken);
-
+    const octokit = github.getOctokit(githubToken);
     // Suffix comment with hidden value to check for updating later.
     const commentIdSuffix = `\n\n\n<hidden purpose="for-rewritable-pr-comment-action-use" value="${commentId}"></hidden>`;
 
     // If comment already exists, get the comment ID.
     const existingCommentId = await checkForExistingComment(
       octokit,
+      issue_number,
+      commentId,
       repo,
       owner,
-      issueNumber,
       commentIdSuffix,
     );
 
-    const commentBody = `${commentMessage}${commentIdSuffix}`;
-    let comment;
+    const commentBody = commentMessage + commentIdSuffix;
+    let comment = undefined;
+
     if (existingCommentId) {
       comment = await octokit.issues.updateComment({
-        repo,
         owner,
+        repo,
         comment_id: existingCommentId,
         body: commentBody,
       });
     } else {
       comment = await octokit.issues.createComment({
-        repo,
         owner,
-        issue_number: issueNumber,
+        repo,
+        issue_number,
         body: commentBody,
       });
     }
 
     core.setOutput('comment-id', comment.data.id);
-
-    return comment;
-
   } catch (e) {
     core.setFailed(e.message);
   }
-
 }
 
-module.exports = { run };
-
-// call and export run function
 run();
