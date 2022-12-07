@@ -4,8 +4,7 @@
 
 ### START GITHUB ACTIONS FILES ###
 
-!**/node_modules
-!**/dist
+**/node_modules
 
 ### END GITHUB ACTIONS FILES ###
 
@@ -134,7 +133,6 @@ lib-cov
 
 # Build directories
 **/_build/
-**/dist
 build/
 out/
 target/
