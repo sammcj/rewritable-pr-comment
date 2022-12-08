@@ -19,6 +19,7 @@
     ]
   },
   "author": "sammcj",
+  "type": "commonjs",
   "license": "MIT",
   "devDependencies": {
     "eslint": "8.29.0",
