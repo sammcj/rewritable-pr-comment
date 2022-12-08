@@ -1,5 +1,6 @@
 const core = require('@actions/core');
-const github = require('@actions/github');
+const { github } = require('@actions/github');
+const octokit = require('@octokit/rest')();
 const DEFAULT_COMMENT_IDENTIFIER = '4YE2JbpAewMX4rxmRnWyoSXoAfaiZH19QDB2IR3OSJTxmjSu';
 const ctx = github.context;
 
@@ -21,6 +22,7 @@ async function checkForExistingComment(octokit, repo, owner, issue_number, comme
 
 async function run() {
   try {
+
     const commentMessage = core.getInput('message');
     const commentId = core.getInput('COMMENT_IDENTIFIER')
       ? core.getInput('COMMENT_IDENTIFIER')
@@ -75,4 +77,9 @@ async function run() {
   }
 }
 
-run().then();
+module.exports = run;
+
+/* istanbul ignore next */
+if (require.main === module) {
+  run();
+}

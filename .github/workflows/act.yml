@@ -1,0 +1,19 @@
+# This workflow is for use locally using [act](https://github.com/nektos/act).
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run-tests-locally:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3
+        with:
+          path: "rewritable-pr-comment"
+      - name: test action locally
+        uses: ./rewritable-pr-comment
+        with:
+          GITHUB_TOKEN: "1234567890"
+          message: "this is a really cool sqs message"
+          ISSUE_ID: "2"
+          COMMENT_IDENTIFIER: '12345'

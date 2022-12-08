@@ -15,6 +15,7 @@ module.exports = {
     browser: true,
     commonjs: true,
     es2021: true,
+    jest: true,
   },
   parserOptions: {
     ecmaVersion: 'latest',
@@ -38,6 +39,7 @@ module.exports = {
     'space-before-blocks': 'error',
     curly: ['error', 'multi-line', 'consistent'],
     'no-bitwise': ['error'],
+    'no-console': 0,
     'no-trailing-spaces': ['error'],
     'no-duplicate-imports': ['error'],
     'no-shadow': 'off',
@@ -45,10 +47,17 @@ module.exports = {
     'import/order': 'error',
     'prettier/prettier': 'error',
     'max-classes-per-file': ['error', 3],
-    /** no console and debugger in CDK  */
-    'no-console': 'error',
-    'no-debugger': 'error',
     'no-underscore-dangle': 'off',
     'lines-between-class-members': ['error', 'always', { exceptAfterSingleLine: true }],
   },
+  ignorePatterns: [
+    '!**/*.eslintrc.js*',
+    '!**/*.prettierrc.js*',
+    '**/node_modules/**',
+    '**/dist/**',
+    '**/build/**',
+    '**/coverage/**',
+    '**/cdk.out/**',
+    'jest.setup.ts',
+  ],
 };

@@ -1,5 +1,4 @@
-name: "Build, Test, Bump Version and Release"
-
+name: Build, Test, Bump Version and Release
 on:
   push:
     branches:
@@ -19,14 +18,14 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up Node
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@8c91899e586c5b171469028077307d293428b516 # tag=v3
+        name: Set up Node.js
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: ".nvmrc"
 
       # Build
-      - name: 'Install dependencies and build'
-        shell: bash
+      # Build
+      - name: "Install dependencies and build"
         run: |
           npm i -g npm@latest
           npm ci
@@ -45,7 +44,7 @@ jobs:
       # Bump version
       - name: Bump version and push tag
         id: tag_version
-        uses: mathieudutour/github-tag-action@v6.0
+        uses: mathieudutour/github-tag-action@fcfbdceb3093f6d85a3b194740f8c6cec632f4e2 # tag=v6.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           release_branches: main
@@ -53,7 +52,7 @@ jobs:
 
       # Publish
       - name: Create a GitHub release
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@18eadf9c9b0f226f47f164f5373c6a44f0aae169 # v1
         with:
           tag: ${{ steps.tag_version.outputs.new_tag }}
           name: Release ${{ steps.tag_version.outputs.new_tag }}
