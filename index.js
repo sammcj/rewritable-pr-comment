@@ -77,6 +77,7 @@ async function run() {
   }
 }
 
+module.exports = run;
 export default run;
 
 /* istanbul ignore next */
