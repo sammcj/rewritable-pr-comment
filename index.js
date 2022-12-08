@@ -1,4 +1,4 @@
-import { getInput, setFailed, setOutput } from '@actions/core';
+import '@actions/core';
 const github = require('@actions/github');
 const DEFAULT_COMMENT_IDENTIFIER = '4YE2JbpAewMX4rxmRnWyoSXoAfaiZH19QDB2IR3OSJTxmjSu';
 const ctx = github.context;
@@ -75,7 +75,6 @@ async function run() {
   }
 }
 
-module.exports = run;
 export default run;
 
 /* istanbul ignore next */
