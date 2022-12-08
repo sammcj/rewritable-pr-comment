@@ -111,7 +111,6 @@ tmp/
 *.seed
 *.tgz
 **/.BUILD_COMPLETED
-**/.cache
 **/.filesystem
 **/.LAST_BUILD
 **/.local-npm
