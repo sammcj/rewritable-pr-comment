@@ -1,5 +1,5 @@
 import { getInput, setFailed, setOutput } from '@actions/core';
-import { github } from '@actions/github';
+const github = require('@actions/github');
 const DEFAULT_COMMENT_IDENTIFIER = '4YE2JbpAewMX4rxmRnWyoSXoAfaiZH19QDB2IR3OSJTxmjSu';
 const ctx = github.context;
 
@@ -66,6 +66,8 @@ async function run() {
         body: commentBody,
       });
     }
+
+    module.exports = comment;
 
     setOutput('comment-id', comment.data.id);
   } catch (e) {
