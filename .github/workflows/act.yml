@@ -16,4 +16,4 @@ jobs:
           GITHUB_TOKEN: "1234567890"
           message: "this is a really cool sqs message"
           ISSUE_ID: "2"
-          COMMENT_IDENTIFIER: '12345'
+          COMMENT_IDENTIFIER: "12345"

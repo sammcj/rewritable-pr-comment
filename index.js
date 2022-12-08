@@ -1,6 +1,5 @@
 import { getInput, setFailed, setOutput } from '@actions/core';
 import { github } from '@actions/github';
-const octokit = require('@octokit/rest')();
 const DEFAULT_COMMENT_IDENTIFIER = '4YE2JbpAewMX4rxmRnWyoSXoAfaiZH19QDB2IR3OSJTxmjSu';
 const ctx = github.context;
 
@@ -22,16 +21,13 @@ async function checkForExistingComment(octokit, repo, owner, issue_number, comme
 
 async function run() {
   try {
-
     const commentMessage = getInput('message');
     const commentId = getInput('COMMENT_IDENTIFIER')
       ? getInput('COMMENT_IDENTIFIER')
       : DEFAULT_COMMENT_IDENTIFIER;
     const githubToken = getInput('GITHUB_TOKEN');
 
-    const issue_id = getInput('ISSUE_ID')
-      ? getInput('ISSUE_ID')
-      : ctx.payload.pull_request.number;
+    const issue_id = getInput('ISSUE_ID') ? getInput('ISSUE_ID') : ctx.payload.pull_request.number;
     const { owner, repo } = ctx.repo;
 
     if (!issue_id) {
@@ -39,7 +35,7 @@ async function run() {
       return;
     }
 
-    const octokit = new github(githubToken);
+    const octokit = github.getOctokit(githubToken);
 
     // Suffix comment with hidden value to check for updating later.
     const commentIdSuffix = `\n\n\n<hidden purpose="for-rewritable-pr-comment-action-use" value="${commentId}"></hidden>`;
