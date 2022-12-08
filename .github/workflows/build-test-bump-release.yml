@@ -1,4 +1,4 @@
-name: Build, Test, Bump Version and Release
+name: "Build, Test, Bump Version and Release"
 
 on:
   push:
@@ -22,10 +22,10 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
-          node-version-file: .nvmrc
+          node-version-file: '.nvmrc'
 
       # Build
-      - name: "Install dependencies and build"
+      - name: 'Install dependencies and build'
         shell: bash
         run: |
           npm i -g npm@latest
@@ -35,14 +35,12 @@ jobs:
 
       # Test
       - uses: ./
-        name: "test this action"
-        id: test
+        name: 'test this action'
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          message: "test message"
+          message: 'test message'
           ISSUE_ID: 2
-          GITHUB_TOKEN: ${{ secrets.ACTION_TOKEN }}
-          COMMENT_IDENTIFIER: "test-output-comment-rewritable-action"
+          COMMENT_IDENTIFIER: 'test-output-comment-rewritable-action'
 
       # Bump version
       - name: Bump version and push tag
