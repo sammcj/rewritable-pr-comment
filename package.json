@@ -20,7 +20,7 @@
   },
   "author": "sammcj",
   "license": "MIT",
-  "type": "module",
+  "type": "commonjs",
   "devDependencies": {
     "eslint": "8.29.0",
     "eslint-config-prettier": "8.5.0",

@@ -1,4 +1,4 @@
-import '@actions/core';
+const { getInput, setOutput, setFailed } = require('@actions/core');
 const github = require('@actions/github');
 const DEFAULT_COMMENT_IDENTIFIER = '4YE2JbpAewMX4rxmRnWyoSXoAfaiZH19QDB2IR3OSJTxmjSu';
 const ctx = github.context;
@@ -67,17 +67,10 @@ async function run() {
       });
     }
 
-    module.exports = comment;
-
     setOutput('comment-id', comment.data.id);
   } catch (e) {
     setFailed(e.message);
   }
 }
 
-export default run;
-
-/* istanbul ignore next */
-if (require.main === module) {
-  run();
-}
+run();
