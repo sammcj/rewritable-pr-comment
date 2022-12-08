@@ -2,9 +2,9 @@
   "name": "rewritable-pr-comment",
   "version": "0.7.0",
   "description": "Github Action that posts a PR / issue comment that re-writes itself on update",
-  "main": "dist/index.js",
+  "main": "index.js",
   "scripts": {
-    "build": "npx @vercel/ncc build index.js -o dist",
+    "build": "npx @vercel/ncc build index.js --license licenses.txt --v8-cache --source-map -o dist",
     "test": "jest --passWithNoTests",
     "lint": "prettier -w .; eslint --fix"
   },

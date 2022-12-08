@@ -1,4 +1,5 @@
 name: Build, Test, Bump Version and Release
+
 on:
   push:
     branches:
@@ -14,16 +15,18 @@ permissions:
 jobs:
   build-test-publish:
     timeout-minutes: 15
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        name: Set up Node.js
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
         with:
           node-version-file: .nvmrc
 
       # Build
       - name: "Install dependencies and build"
+        shell: bash
         run: |
           npm i -g npm@latest
           npm ci
@@ -33,7 +36,9 @@ jobs:
       # Test
       - uses: ./
         name: "test this action"
+        id: test
         with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           message: "test message"
           ISSUE_ID: 2
           GITHUB_TOKEN: ${{ secrets.ACTION_TOKEN }}
