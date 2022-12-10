@@ -5,6 +5,9 @@ on:
       - main
       - master
   workflow_dispatch:
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
@@ -45,6 +48,7 @@ jobs:
       # Bump version
       - name: Bump version and push tag
         id: tag_version
+        if: github.ref == 'refs/heads/main'
         uses: mathieudutour/github-tag-action@fcfbdceb3093f6d85a3b194740f8c6cec632f4e2 # tag=v6.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -53,6 +57,7 @@ jobs:
 
       # Publish
       - name: Create a GitHub release
+        if: github.ref == 'refs/heads/main'
         uses: ncipollo/release-action@18eadf9c9b0f226f47f164f5373c6a44f0aae169 # v1
         with:
           tag: ${{ steps.tag_version.outputs.new_tag }}
