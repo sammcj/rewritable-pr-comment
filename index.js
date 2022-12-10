@@ -1,6 +1,5 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
-const context = require('@actions/github');
 const DEFAULT_COMMENT_IDENTIFIER = '4YE2JbpAewMX4rxmRnWyoSXoAfaiZH19QDB2IR3OSJTxmjSu';
 
 async function checkForExistingComment(octokit, issue_number, commentIdentifier, repo, owner) {
@@ -27,9 +26,9 @@ async function checkForExistingComment(octokit, issue_number, commentIdentifier,
 
 async function run() {
   try {
-    // const context = github.context;
-    const repo = context.repo;
-    const owner = context.repository_owner;
+    const context = github.context;
+    const repo = core.getInput('repo') ? core.getInput('repo') : context.repo.repo;
+    const owner = core.getInput('owner') ? core.getInput('owner') : repo.owner;
     const commentMessage = core.getInput('message');
     const commentId = core.getInput('COMMENT_IDENTIFIER')
       ? core.getInput('COMMENT_IDENTIFIER')
@@ -40,7 +39,7 @@ async function run() {
 
     const issue_number = core.getInput('ISSUE_ID')
       ? core.getInput('ISSUE_ID')
-      : context.payload.pull_request.number;
+      : context.payload.issue.number;
 
     if (!issue_number) {
       core.setFailed('Action must run on a Pull Request.');
