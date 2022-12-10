@@ -19,7 +19,7 @@ async function checkForExistingComment(octokit, issue_number, commentIdentifier,
     review_id: github.context.payload.number
   });
 
-  if (!existingComments.data.length) {
+  if (!existingComments.data) {
     return undefined;
   }
 
