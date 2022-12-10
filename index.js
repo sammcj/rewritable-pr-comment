@@ -7,9 +7,9 @@ async function checkForExistingComment(octokit, issue_number, commentIdentifier,
   // console log
   console.log('Checking for existing comment');
   const existingComments = await octokit.issues.listComments({
-    issue_number,
-    repo,
     owner,
+    repo,
+    issue_number,
   });
 
   if (!existingComments.data.length) {
@@ -29,7 +29,7 @@ async function run() {
   try {
     // const context = github.context;
     const repo = context.repo;
-    const owner = context.owner;
+    const owner = context.repository_owner;
     const commentMessage = core.getInput('message');
     const commentId = core.getInput('COMMENT_IDENTIFIER')
       ? core.getInput('COMMENT_IDENTIFIER')
