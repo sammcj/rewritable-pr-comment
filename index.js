@@ -16,7 +16,7 @@ async function checkForExistingComment(octokit, issue_number, commentIdentifier,
     owner,
     repo,
     pull_number: issue_number,
-    review_id: github.context.payload.review.id,
+    review_id: github.context.number
   });
 
   if (!existingComments.data.length) {
