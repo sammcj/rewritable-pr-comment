@@ -5,10 +5,18 @@ const DEFAULT_COMMENT_IDENTIFIER = '4YE2JbpAewMX4rxmRnWyoSXoAfaiZH19QDB2IR3OSJTx
 async function checkForExistingComment(octokit, issue_number, commentIdentifier, repo, owner) {
   // console log
   console.log('Checking for existing comment');
-  const existingComments = await octokit.issues.listComments({
+  // const existingComments = await octokit.issues.listComments({
+  //   owner,
+  //   repo,
+  //   issue_number,
+  // });
+
+  // TODO: maybe tap into this this?
+  const existingComments = octokit.rest.pulls.listCommentsForReview({
     owner,
     repo,
-    issue_number,
+    pull_number: issue_number,
+    review_id: github.context.payload.review.id,
   });
 
   if (!existingComments.data.length) {
