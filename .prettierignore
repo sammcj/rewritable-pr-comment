@@ -16,6 +16,7 @@
 **/build
 **/cdk.out
 **/coverage
+**/dist
 **/global.setup.ts
 **/htmlcov
 **/logs
