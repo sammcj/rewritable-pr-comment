@@ -23,8 +23,8 @@ const inputs = {
 
 if (inputs.debug) {
   console.log('debug', inputs.debug);
-  console.log('context', context);
-  console.log(inputs);
+  console.log('context =' + context);
+  console.log('inputs =' + inputs);
 }
 
 async function run() {
@@ -80,7 +80,9 @@ async function checkForExistingComment(octokit, issue_number, commentIdentifier,
 
   if (inputs.debug) {
     console.log('debug', inputs.debug);
-    console.log(octokit, issue_number, commentIdentifier, context);
+    console.log('octokit =' + octokit);
+    console.log('issue_number =' + issue_number);
+    console.log('commentIdentifier = ' + commentIdentifier);
   }
 
   try {
@@ -92,7 +94,7 @@ async function checkForExistingComment(octokit, issue_number, commentIdentifier,
 
     if (inputs.debug) {
       console.log('debug', inputs.debug);
-      console.log(existingComments);
+      console.log('existingComments =' + existingComments);
     }
 
     if (Array.isArray(existingComments.data)) {
