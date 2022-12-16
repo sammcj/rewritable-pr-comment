@@ -62,7 +62,7 @@ async function run() {
     } else {
       console.log('Creating new comment');
       comment = await octokit.rest.issues.createComment({
-        ...context,
+        ...context.repo,
         issue_number,
         body: commentBody,
       });
