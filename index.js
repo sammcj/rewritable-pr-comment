@@ -8,10 +8,10 @@ const octokit = new Octokit({
   auth: githubToken,
 });
 
-console.log('context', context);
-
 // if inputs are in uppercase change them to lowercase
 const inputs = {
+  debug: core.getInput('debug') ? core.getInput('debug') : false,
+
   message: core.getInput('message'),
   comment_identifier: core.getInput('comment_identifier')
     ? core.getInput('comment_identifier')
@@ -20,6 +20,12 @@ const inputs = {
     ? core.getInput('issue_id')
     : context.payload.issue.number || context.payload.pull_request.number,
 };
+
+if (inputs.debug) {
+  console.log('debug', inputs.debug);
+  console.log('context', context);
+  console.log(inputs);
+}
 
 async function run() {
   try {
@@ -47,12 +53,14 @@ async function run() {
     let comment = undefined;
 
     if (existingCommentId) {
+      console.log('Updating existing comment');
       comment = await octokit.rest.pulls.updateReviewComment({
         ...context,
         comment_id: existingCommentId,
         body: commentBody,
       });
     } else {
+      console.log('Creating new comment');
       comment = await octokit.rest.issues.createComment({
         ...context,
         issue_number,
@@ -70,6 +78,11 @@ async function checkForExistingComment(octokit, issue_number, commentIdentifier,
   // Check for an existing comment with the commentIdentifier and returns the comment ID if it exists.
   console.log('Checking for existing comment');
 
+  if (inputs.debug) {
+    console.log('debug', inputs.debug);
+    console.log(octokit, issue_number, commentIdentifier, context);
+  }
+
   try {
     const existingComments = await octokit.rest.pulls.getCommentsForReview({
       ...context,
@@ -77,13 +90,28 @@ async function checkForExistingComment(octokit, issue_number, commentIdentifier,
       review_id: commentIdentifier,
     });
 
+    if (inputs.debug) {
+      console.log('debug', inputs.debug);
+      console.log(existingComments);
+    }
+
     if (Array.isArray(existingComments.data)) {
       existingComments.data.forEach(({ body, id }) => {
         if (body.includes(commentIdentifier)) commentIdentifier = id;
       });
+
+      if (inputs.debug) {
+        console.log('debug', inputs.debug);
+        console.log(commentIdentifier);
+      }
     }
     return commentIdentifier;
   } catch (e) {
+    if (inputs.debug) {
+      console.log('debug', inputs.debug);
+      console.log('error', e);
+      console.log('returning undefined');
+    }
     return undefined;
   }
 }

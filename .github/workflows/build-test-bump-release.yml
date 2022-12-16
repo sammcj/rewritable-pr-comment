@@ -41,6 +41,7 @@ jobs:
       - uses: ./
         name: "test this action"
         with:
+          debug: "true"
           github_token: ${{ secrets.GITHUB_TOKEN }}
           message: "test message"
           issue_id: 2

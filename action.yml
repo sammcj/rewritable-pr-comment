@@ -17,6 +17,9 @@ inputs:
     description: "A unique identifier for the re-writeable comment (can be the purpose of the comment)"
   issue_id:
     description: "The identifier for a PR / issue that the comment should be made on. Defaults to the PR that the workflow is running on"
+  debug:
+    description: "If true, the action will print out debug information"
+    default: "false"
 
 outputs:
   comment-id:
