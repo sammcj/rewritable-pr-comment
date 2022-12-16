@@ -3,6 +3,7 @@ const { Octokit } = require('@octokit/rest');
 const { context } = require('@actions/github');
 
 const githubToken = core.getInput('github_token');
+
 const octokit = new Octokit({
   auth: githubToken,
 });
@@ -17,7 +18,7 @@ const inputs = {
     : '4YE2JbpAewMX4rxmRnWyoSXoAfaiZH19QDB2IR3OSJTxmjSu',
   issue_id: core.getInput('issue_id')
     ? core.getInput('issue_id')
-    : context.payload.pull_request.number,
+    : context.payload.issue.number || context.payload.pull_request.number,
 };
 
 async function run() {
@@ -39,7 +40,7 @@ async function run() {
       octokit,
       issue_number,
       commentId,
-      ...context,
+      context,
     );
 
     const commentBody = commentMessage + commentIdSuffix;
@@ -70,7 +71,7 @@ async function checkForExistingComment(octokit, issue_number, commentIdentifier,
   console.log('Checking for existing comment');
 
   try {
-    const existingComments = octokit.rest.pulls.listCommentsForReview({
+    const existingComments = await octokit.rest.pulls.listCommentsForReview({
       ...context,
       pull_number: issue_number,
       review_id: commentIdentifier,
