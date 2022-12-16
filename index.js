@@ -69,26 +69,26 @@ async function run() {
 }
 
 async function checkForExistingComment(octokit, issue_number, commentIdentifier, repo, owner) {
-  // console log
   console.log('Checking for existing comment');
-  const existingComments = octokit.rest.pulls.listCommentsForReview({
-    owner,
-    repo,
-    pull_number: issue_number,
-    review_id: github.context.payload.number,
-  });
 
-  if (!existingComments.data) {
+  try {
+    let existingCommentId = undefined;
+    const existingComments = octokit.rest.pulls.listCommentsForReview({
+      owner,
+      repo,
+      pull_number: issue_number,
+      review_id: github.context.payload.number,
+    });
+
+    if (Array.isArray(existingComments.data)) {
+      existingComments.data.forEach(({ body, id }) => {
+        if (body.includes(commentIdentifier)) existingCommentId = id;
+      });
+    }
+    return existingCommentId;
+  } catch (e) {
     return undefined;
   }
-
-  let existingCommentId = undefined;
-  if (Array.isArray(existingComments.data)) {
-    existingComments.data.forEach(({ body, id }) => {
-      if (body.includes(commentIdentifier)) existingCommentId = id;
-    });
-  }
-  return existingCommentId;
 }
 
 run();
