@@ -40,7 +40,6 @@ async function run() {
       commentId,
       repo,
       owner,
-      commentIdSuffix,
     );
 
     const commentBody = commentMessage + commentIdSuffix;
