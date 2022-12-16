@@ -1,29 +1,30 @@
 const core = require('@actions/core');
-const github = require('@actions/github');
-const DEFAULT_COMMENT_IDENTIFIER = '4YE2JbpAewMX4rxmRnWyoSXoAfaiZH19QDB2IR3OSJTxmjSu';
 const { Octokit } = require('@octokit/rest');
+const { context } = require('@actions/github');
 
-const githubToken = core.getInput('GITHUB_TOKEN');
-
+const githubToken = core.getInput('github_token');
 const octokit = new Octokit({
   auth: githubToken,
 });
 
+console.log('context', context);
+
+// if inputs are in uppercase change them to lowercase
+const inputs = {
+  message: core.getInput('message'),
+  comment_identifier: core.getInput('comment_identifier')
+    ? core.getInput('comment_identifier')
+    : '4YE2JbpAewMX4rxmRnWyoSXoAfaiZH19QDB2IR3OSJTxmjSu',
+  issue_id: core.getInput('issue_id')
+    ? core.getInput('issue_id')
+    : context.payload.issue.number || context.payload.pull_request.number,
+};
+
 async function run() {
   try {
-    const context = github.context;
-    const repo = core.getInput('repo') ? core.getInput('repo') : context.repo.repo;
-    const owner = core.getInput('owner') ? core.getInput('owner') : repo.owner;
-    const commentMessage = core.getInput('message');
-    const commentId = core.getInput('COMMENT_IDENTIFIER')
-      ? core.getInput('COMMENT_IDENTIFIER')
-      : DEFAULT_COMMENT_IDENTIFIER;
-
-    console.log('context', context);
-
-    const issue_number = core.getInput('ISSUE_ID')
-      ? core.getInput('ISSUE_ID')
-      : context.payload.issue.number;
+    const commentMessage = inputs.message;
+    const commentId = inputs.comment_identifier;
+    const issue_number = inputs.issue_id;
 
     if (!issue_number) {
       core.setFailed('Action must run on a Pull Request.');
@@ -38,24 +39,21 @@ async function run() {
       octokit,
       issue_number,
       commentId,
-      repo,
-      owner,
+      ...context,
     );
 
     const commentBody = commentMessage + commentIdSuffix;
     let comment = undefined;
 
     if (existingCommentId) {
-      comment = await octokit.issues.updateComment({
-        owner,
-        repo,
+      comment = await octokit.rest.pulls.updateReviewComment({
+        ...context,
         comment_id: existingCommentId,
         body: commentBody,
       });
     } else {
-      comment = await octokit.issues.createComment({
-        owner,
-        repo,
+      comment = await octokit.rest.issues.createComment({
+        ...context,
         issue_number,
         body: commentBody,
       });
@@ -67,24 +65,23 @@ async function run() {
   }
 }
 
-async function checkForExistingComment(octokit, issue_number, commentIdentifier, repo, owner) {
+async function checkForExistingComment(octokit, issue_number, commentIdentifier, context) {
+  // Check for an existing comment with the commentIdentifier and returns the comment ID if it exists.
   console.log('Checking for existing comment');
 
   try {
-    let existingCommentId = undefined;
     const existingComments = octokit.rest.pulls.listCommentsForReview({
-      owner,
-      repo,
+      ...context,
       pull_number: issue_number,
-      review_id: github.context.payload.number,
+      review_id: commentIdentifier,
     });
 
     if (Array.isArray(existingComments.data)) {
       existingComments.data.forEach(({ body, id }) => {
-        if (body.includes(commentIdentifier)) existingCommentId = id;
+        if (body.includes(commentIdentifier)) commentIdentifier = id;
       });
     }
-    return existingCommentId;
+    return commentIdentifier;
   } catch (e) {
     return undefined;
   }
