@@ -1,36 +1,13 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 const DEFAULT_COMMENT_IDENTIFIER = '4YE2JbpAewMX4rxmRnWyoSXoAfaiZH19QDB2IR3OSJTxmjSu';
+const { Octokit } = require('@octokit/rest');
 
-async function checkForExistingComment(octokit, issue_number, commentIdentifier, repo, owner) {
-  // console log
-  console.log('Checking for existing comment');
-  // const existingComments = await octokit.issues.listComments({
-  //   owner,
-  //   repo,
-  //   issue_number,
-  // });
+const githubToken = core.getInput('GITHUB_TOKEN');
 
-  // TODO: maybe tap into this this?
-  const existingComments = octokit.rest.pulls.listCommentsForReview({
-    owner,
-    repo,
-    pull_number: issue_number,
-    review_id: github.context.payload.number,
-  });
-
-  if (!existingComments.data) {
-    return undefined;
-  }
-
-  let existingCommentId = undefined;
-  if (Array.isArray(existingComments.data)) {
-    existingComments.data.forEach(({ body, id }) => {
-      if (body.includes(commentIdentifier)) existingCommentId = id;
-    });
-  }
-  return existingCommentId;
-}
+const octokit = new Octokit({
+  auth: githubToken,
+});
 
 async function run() {
   try {
@@ -41,7 +18,6 @@ async function run() {
     const commentId = core.getInput('COMMENT_IDENTIFIER')
       ? core.getInput('COMMENT_IDENTIFIER')
       : DEFAULT_COMMENT_IDENTIFIER;
-    const githubToken = core.getInput('GITHUB_TOKEN');
 
     console.log('context', context);
 
@@ -54,7 +30,6 @@ async function run() {
       return;
     }
 
-    const octokit = github.getOctokit(githubToken);
     // Suffix comment with hidden value to check for updating later.
     const commentIdSuffix = `\n\n\n<hidden purpose="for-rewritable-pr-comment-action-use" value="${commentId}"></hidden>`;
 
@@ -91,6 +66,29 @@ async function run() {
   } catch (e) {
     core.setFailed(e.message);
   }
+}
+
+async function checkForExistingComment(octokit, issue_number, commentIdentifier, repo, owner) {
+  // console log
+  console.log('Checking for existing comment');
+  const existingComments = octokit.rest.pulls.listCommentsForReview({
+    owner,
+    repo,
+    pull_number: issue_number,
+    review_id: github.context.payload.number,
+  });
+
+  if (!existingComments.data) {
+    return undefined;
+  }
+
+  let existingCommentId = undefined;
+  if (Array.isArray(existingComments.data)) {
+    existingComments.data.forEach(({ body, id }) => {
+      if (body.includes(commentIdentifier)) existingCommentId = id;
+    });
+  }
+  return existingCommentId;
 }
 
 run();
