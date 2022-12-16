@@ -41,10 +41,10 @@ jobs:
       - uses: ./
         name: "test this action"
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           message: "test message"
-          ISSUE_ID: 2
-          COMMENT_IDENTIFIER: "test-output-comment-rewritable-action"
+          issue_id: 2
+          comment_identifier: "test-output-comment-rewritable-action"
 
       # Bump version
       - name: Bump version and push tag
