@@ -20,6 +20,7 @@ jobs:
     name: lint-shell
     runs-on: ubuntu-22.04
     timeout-minutes: 10
+    if: ${{ !github.event.pull_request.draft }}
     steps:
       - uses: actions/checkout@755da8c3cf115ac066823e79a1e1788f8940201b # v3
       - name: shellcheck

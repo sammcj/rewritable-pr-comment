@@ -10,13 +10,16 @@ inputs:
   message:
     description: "Message that should be printed in the pull request"
     required: true
-  GITHUB_TOKEN:
+  github_token:
     description: "Github token of the repository (automatically created by Github)"
     required: true
-  COMMENT_IDENTIFIER:
+  comment_identifier:
     description: "A unique identifier for the re-writeable comment (can be the purpose of the comment)"
-  ISSUE_ID:
+  issue_id:
     description: "The identifier for a PR / issue that the comment should be made on. Defaults to the PR that the workflow is running on"
+  debug:
+    description: "If true, the action will print out debug information"
+    default: "false"
 
 outputs:
   comment-id:
@@ -24,4 +27,4 @@ outputs:
 
 runs:
   using: "node16"
-  main: "index.js"
+  main: "dist/index.js"

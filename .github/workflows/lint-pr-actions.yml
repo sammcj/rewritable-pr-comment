@@ -30,6 +30,7 @@ concurrency:
 
 jobs:
   lint-actions-workflows:
+    if: ${{ !github.event.pull_request.draft }}
     name: Lint Actions Workflows
     runs-on: ubuntu-22.04
     if: ${{ !github.event.pull_request.draft }}

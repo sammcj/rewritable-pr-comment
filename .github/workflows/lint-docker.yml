@@ -4,6 +4,7 @@ name: "Lint Docker"
 
 on:
   pull_request:
+    types: [ready_for_review]
     paths:
       - "**/Dockerfile.*"
       - "**/docker-compose.*"
