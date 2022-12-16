@@ -30,5 +30,6 @@ jobs:
     if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-22.04
     timeout-minutes: 5
+    if: ${{ !github.event.pull_request.draft }}
     steps:
       - run: echo "This workflow is a placeholder for PRs that don't require linting of Github Actions workflows"
