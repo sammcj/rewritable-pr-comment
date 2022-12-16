@@ -71,7 +71,7 @@ async function checkForExistingComment(octokit, issue_number, commentIdentifier,
   console.log('Checking for existing comment');
 
   try {
-    const existingComments = await octokit.rest.pulls.listCommentsForReview({
+    const existingComments = await octokit.rest.pulls.getCommentsForReview({
       ...context,
       pull_number: issue_number,
       review_id: commentIdentifier,
