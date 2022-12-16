@@ -17,7 +17,7 @@ const inputs = {
     : '4YE2JbpAewMX4rxmRnWyoSXoAfaiZH19QDB2IR3OSJTxmjSu',
   issue_id: core.getInput('issue_id')
     ? core.getInput('issue_id')
-    : context.payload.issue.number || context.payload.pull_request.number,
+    : context.payload.pull_request.number,
 };
 
 async function run() {
