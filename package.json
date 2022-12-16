@@ -40,6 +40,6 @@
     "@octokit/core": "4.1.0",
     "@octokit/rest": "19.0.5",
     "octokit": "2.0.10",
-    "@octokit/webhooks-schemas": "6.7.0"
+    "@octokit/webhooks-schemas": "6.8.0"
   }
 }
