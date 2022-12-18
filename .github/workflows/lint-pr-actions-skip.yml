@@ -9,6 +9,11 @@ name: "Lint Github Actions Workflows"
 
 on:
   pull_request:
+    types:
+      - opened
+      - edited
+      - reopened
+      - synchronize
     branches:
       - main
       - master
@@ -27,8 +32,8 @@ concurrency:
 jobs:
   lint-actions-workflows:
     name: Lint Actions Workflows
-    if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-22.04
     timeout-minutes: 5
+    if: ${{ !github.event.pull_request.draft }}
     steps:
       - run: echo "This workflow is a placeholder for PRs that don't require linting of Github Actions workflows"
