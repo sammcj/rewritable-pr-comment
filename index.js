@@ -49,14 +49,14 @@ async function run() {
     if (existingCommentId) {
       console.log('Existing comment found');
       if (inputs.debug) {
+        console.log('existing comment ID:', existingCommentId);
         try {
           const existingComment = await octokit.rest.issues.getComment({
             ...context.repo.owner,
             ...context.repo.repo,
-            comment_id: existingCommentId,
+            comment_id: existingCommentId.comment_id,
           });
           console.log(existingComment);
-          octokit.setOutput('existingComment', existingComment);
         } catch (error) {
           console.log(error);
         }
@@ -66,7 +66,7 @@ async function run() {
         comment = await octokit.rest.issues.updateComment({
           ...context.repo.owner,
           ...context.repo.repo,
-          comment_id: existingCommentId,
+          comment_id: existingCommentId.comment_id,
           body: commentBody,
         });
       } catch (error) {
