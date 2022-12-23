@@ -1,3 +1,4 @@
+const process = require('process');
 const core = require('@actions/core');
 const { Octokit } = require('@octokit/rest');
 const { context } = require('@actions/github');
@@ -7,6 +8,10 @@ const githubToken = core.getInput('github_token');
 const octokit = new Octokit({
   auth: githubToken,
 });
+
+var stepSummary = (value) => {
+  process.env['GITHUB_STEP_SUMMARY'] = value;
+};
 
 // if inputs are in uppercase change them to lowercase
 const inputs = {
@@ -22,9 +27,12 @@ const inputs = {
 };
 
 if (inputs.debug) {
-  console.log('debug', inputs.debug);
-  console.log('context =' + context);
-  console.log('inputs =' + inputs);
+  console.log('debug enabled');
+  stepSummary(`debug: ${inputs.debug}`);
+  console.log(`context: ${context}`);
+  stepSummary(`context: ${context}`);
+  console.log(`inputs: ${inputs}`);
+  stepSummary(`inputs: ${inputs}`);
 }
 
 async function run() {
@@ -79,10 +87,18 @@ async function checkForExistingComment(octokit, issue_number, commentIdentifier,
   console.log('Checking for existing comment');
 
   if (inputs.debug) {
-    console.log('debug', inputs.debug);
-    console.log('octokit =' + octokit);
-    console.log('issue_number =' + issue_number);
-    console.log('commentIdentifier = ' + commentIdentifier);
+    console.log('debug: enabled');
+    stepSummary(`debug: ${inputs.debug}`);
+    console.log(`owner: ${context.repo.owner}`);
+    stepSummary(`owner: ${context.repo.owner}`);
+    console.log(`repo: ${context.repo.repo}`);
+    stepSummary(`repo: ${context.repo.repo}`);
+    console.log(`octokit: ${octokit}`);
+    stepSummary(`octokit: ${octokit}`);
+    console.log(`issue_number: ${issue_number}`);
+    stepSummary(`issue_number: ${issue_number}`);
+    console.log(`commentIdentifier: ${commentIdentifier}`);
+    stepSummary(`commentIdentifier: ${commentIdentifier}`);
   }
 
   try {
