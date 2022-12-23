@@ -11,7 +11,6 @@ const octokit = new Octokit({
 // if inputs are in uppercase change them to lowercase
 const inputs = {
   debug: core.getInput('debug') ? core.getInput('debug') : false,
-
   message: core.getInput('message'),
   comment_identifier: core.getInput('comment_identifier')
     ? core.getInput('comment_identifier')
@@ -46,31 +45,45 @@ async function run() {
     const commentBody = commentMessage + commentIdSuffix;
     let comment = undefined;
 
+    // If comment already exists, update it. Otherwise, create a new comment.
     if (existingCommentId) {
       console.log('Existing comment found');
       if (inputs.debug) {
-        const existingComment = await octokit.rest.issues.getComment({
+        try {
+          const existingComment = await octokit.rest.issues.getComment({
+            ...context.repo.owner,
+            ...context.repo.repo,
+            comment_id: existingCommentId,
+          });
+          console.log(existingComment.data.body);
+          octokit.setOutput('existingComment', existingComment.data.body);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+
+      try {
+        comment = await octokit.rest.issues.updateComment({
           ...context.repo.owner,
           ...context.repo.repo,
           comment_id: existingCommentId,
+          body: commentBody,
         });
-        console.log(existingComment.data.body);
-        octokit.setOutput('existingComment', existingComment.data.body);
+      } catch (error) {
+        console.log(error);
       }
-      comment = await octokit.rest.issues.updateComment({
-        ...context.repo.owner,
-        ...context.repo.repo,
-        comment_id: existingCommentId,
-        body: commentBody,
-      });
     } else {
-      console.log('Creating new comment');
-      comment = await octokit.rest.issues.createComment({
-        ...context.repo.owner,
-        ...context.repo.repo,
-        issue_number,
-        body: commentBody,
-      });
+      try {
+        console.log('Creating new comment');
+        comment = await octokit.rest.issues.createComment({
+          ...context.repo.owner,
+          ...context.repo.repo,
+          issue_number,
+          body: commentBody,
+        });
+      } catch (error) {
+        console.log(error);
+      }
     }
 
     core.setOutput('comment-id', comment.data.id);
@@ -92,12 +105,14 @@ async function checkForExistingComment(octokit, issue_number, comment_id, contex
   }
 
   try {
+    // Get all comments on the issue.
     const existingComments = await octokit.rest.issues.listComments({
       owner: context.repo.owner,
       repo: context.repo.repo,
       issue_number: issue_number,
     });
 
+    // Check if the comment_id is in the comment body.
     if (Array.isArray(existingComments.data)) {
       existingComments.data.forEach(({ body, id }) => {
         if (body.includes(comment_id)) comment_id = id;
