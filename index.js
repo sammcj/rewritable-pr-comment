@@ -83,11 +83,10 @@ async function checkForExistingComment(octokit, issue_number, comment_id, contex
   }
 
   try {
-    const existingComments = await octokit.rest.issues.getComment({
+    const existingComments = await octokit.rest.issues.listComments({
       owner: context.repo.owner,
       repo: context.repo.repo,
-      // pull_number: issue_number,
-      comment_id: comment_id,
+      issue_number: issue_number,
     });
 
     if (inputs.debug) {
