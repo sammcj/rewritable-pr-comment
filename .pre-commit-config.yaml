@@ -30,7 +30,7 @@ repos:
         files: '!htmltest_output/refcache.json$'
 
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v8.29.0
+    rev: v8.30.0
     hooks:
       - id: eslint
         files: \.[jt]sx?$ # *.js, *.jsx, *.ts and *.tsx
@@ -51,3 +51,12 @@ repos:
         files: \.sh$
         types: [file]
         args: ["-i", "2", "-d", "-l"]
+
+  - repo: local
+    hooks:
+      - id: npm-build
+        name: npm-build
+        entry: bash -c 'npm run build'
+        language: system
+        pass_filenames: false
+        files: dist\.js$
