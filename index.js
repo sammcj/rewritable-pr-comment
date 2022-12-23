@@ -54,8 +54,8 @@ async function run() {
         console.log('existing comment ID:', existingCommentId);
         try {
           const existingComment = await octokit.rest.issues.getComment({
-            owner,
-            repo,
+            ...owner,
+            ...repo,
             comment_id: existingCommentId,
           });
           console.log(existingComment);
@@ -66,8 +66,8 @@ async function run() {
 
       try {
         comment = await octokit.rest.issues.updateComment({
-          owner,
-          repo,
+          ...owner,
+          ...repo,
           comment_id: existingCommentId,
           body: commentBody,
         });
@@ -78,9 +78,9 @@ async function run() {
       try {
         console.log('Creating new comment');
         comment = await octokit.rest.issues.createComment({
-          owner,
-          repo,
-          issue_number,
+          ...owner,
+          ...repo,
+          ...issue_number,
           body: commentBody,
         });
       } catch (error) {
