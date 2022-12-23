@@ -24,8 +24,8 @@ const inputs = {
 async function run() {
   try {
     const commentMessage = inputs.message;
-    const commentId = inputs.comment_identifier;
     const issue_number = inputs.issue_id;
+    const comment_id = inputs.comment_identifier;
 
     if (!issue_number) {
       core.setFailed('Action must run on a Pull Request.');
@@ -33,13 +33,13 @@ async function run() {
     }
 
     // Suffix comment with hidden value to check for updating later.
-    const commentIdSuffix = `\n\n\n<hidden purpose="for-rewritable-pr-comment-action-use" value="${commentId}"></hidden>`;
+    const commentIdSuffix = `\n\n\n<hidden purpose="for-rewritable-pr-comment-action-use" value="${comment_id}"></hidden>`;
 
     // If comment already exists, get the comment ID.
     const existingCommentId = await checkForExistingComment(
       octokit,
       issue_number,
-      commentId,
+      comment_id,
       context,
     );
 
