@@ -15,11 +15,15 @@ inputs:
     required: true
   comment_identifier:
     description: "A unique identifier for the re-writeable comment (can be the purpose of the comment)"
+    default: "4YE2JbpAewMX4rxmRnWyoSXoAfaiZH19QDB2IR3OSJTxmjSu"
+    required: false
   issue_id:
     description: "The identifier for a PR / issue that the comment should be made on. Defaults to the PR that the workflow is running on"
+    required: false
   debug:
     description: "If true, the action will print out debug information"
     default: "false"
+    required: false
 
 outputs:
   comment-id:
