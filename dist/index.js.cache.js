@@ -12000,6 +12000,8 @@ async function run() {
     const commentMessage = inputs.message;
     const issue_number = inputs.issue_id;
     const comment_id = inputs.comment_identifier;
+    const owner = context.repo.owner;
+    const repo = context.repo.repo;
 
     if (!issue_number) {
       core.setFailed('Action must run on a Pull Request.');
@@ -12027,9 +12029,9 @@ async function run() {
         console.log('existing comment ID:', existingCommentId);
         try {
           const existingComment = await octokit.rest.issues.getComment({
-            ...context.repo.owner,
-            ...context.repo.repo,
-            comment_id: existingCommentId.comment_id,
+            owner,
+            repo,
+            comment_id: existingCommentId,
           });
           console.log(existingComment);
         } catch (error) {
@@ -12039,9 +12041,9 @@ async function run() {
 
       try {
         comment = await octokit.rest.issues.updateComment({
-          ...context.repo.owner,
-          ...context.repo.repo,
-          comment_id: existingCommentId.comment_id,
+          owner,
+          repo,
+          comment_id: existingCommentId,
           body: commentBody,
         });
       } catch (error) {
@@ -12051,8 +12053,8 @@ async function run() {
       try {
         console.log('Creating new comment');
         comment = await octokit.rest.issues.createComment({
-          ...context.repo.owner,
-          ...context.repo.repo,
+          owner,
+          repo,
           issue_number,
           body: commentBody,
         });
@@ -12068,13 +12070,15 @@ async function run() {
 }
 
 async function checkForExistingComment(octokit, issue_number, comment_id, context) {
+  const owner = context.repo.owner;
+  const repo = context.repo.repo;
   // Check for an existing comment with the comment_id and returns the comment ID if it exists.
   console.log('Checking for existing comment');
 
   if (inputs.debug) {
     console.log('debug enabled');
-    console.log(`owner: ${context.repo.owner}`);
-    console.log(`repo: ${context.repo.repo}`);
+    console.log(`owner: ${owner}`);
+    console.log(`repo: ${repo}`);
     console.log(`issue_number: ${issue_number}`);
     console.log(`comment_id: ${comment_id}`);
   }
@@ -12082,8 +12086,8 @@ async function checkForExistingComment(octokit, issue_number, comment_id, contex
   try {
     // Get all comments on the issue.
     const existingComments = await octokit.rest.issues.listComments({
-      owner: context.repo.owner,
-      repo: context.repo.repo,
+      owner: owner,
+      repo: repo,
       issue_number: issue_number,
     });
 
