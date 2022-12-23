@@ -8,7 +8,7 @@
     "url": "git+https://github.com/sammcj/rewritable-pr-comment.git"
   },
   "scripts": {
-    "build": "npx @vercel/ncc build -m index.js --license licenses.txt --v8-cache",
+    "build": "npx @vercel/ncc build index.js --license licenses.txt --v8-cache",
     "test": "jest --passWithNoTests",
     "lint": "prettier -w .; eslint --fix",
     "act": "npm run build && act -j run-local",

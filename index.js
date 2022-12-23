@@ -55,8 +55,8 @@ async function run() {
             ...context.repo.repo,
             comment_id: existingCommentId,
           });
-          console.log(existingComment.data.body);
-          octokit.setOutput('existingComment', existingComment.data.body);
+          console.log(existingComment);
+          octokit.setOutput('existingComment', existingComment);
         } catch (error) {
           console.log(error);
         }
@@ -112,6 +112,9 @@ async function checkForExistingComment(octokit, issue_number, comment_id, contex
       issue_number: issue_number,
     });
 
+    if (inputs.debug) {
+      console.log('existingComments data:', existingComments.data);
+    }
     // Check if the comment_id is in the comment body.
     if (Array.isArray(existingComments.data)) {
       existingComments.data.forEach(({ body, id }) => {
