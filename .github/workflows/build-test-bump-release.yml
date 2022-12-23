@@ -46,7 +46,7 @@ jobs:
 
       # Install dependencies
       - name: "Install dependencies and build"
-        if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+        # if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
         run: |
           npm i -g npm@latest
           npm ci
