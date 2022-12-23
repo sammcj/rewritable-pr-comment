@@ -47,8 +47,17 @@ async function run() {
     let comment = undefined;
 
     if (existingCommentId) {
-      console.log('Updating existing comment');
-      comment = await octokit.rest.pulls.updateReviewComment({
+      console.log('Existing comment found');
+      if (inputs.debug) {
+        const existingComment = await octokit.rest.issues.getComment({
+          ...context.repo.owner,
+          ...context.repo.repo,
+          comment_id: existingCommentId,
+        });
+        console.log(existingComment.data.body);
+        octokit.setOutput('existingComment', existingComment.data.body);
+      }
+      comment = await octokit.rest.issues.updateComment({
         ...context.repo.owner,
         ...context.repo.repo,
         comment_id: existingCommentId,
@@ -88,10 +97,6 @@ async function checkForExistingComment(octokit, issue_number, comment_id, contex
       repo: context.repo.repo,
       issue_number: issue_number,
     });
-
-    if (inputs.debug) {
-      console.log(`existingComments: ${existingComments}`);
-    }
 
     if (Array.isArray(existingComments.data)) {
       existingComments.data.forEach(({ body, id }) => {
