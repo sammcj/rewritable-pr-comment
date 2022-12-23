@@ -1,0 +1,12 @@
+name: Auto approve
+
+on: pull_request_target
+
+jobs:
+  auto-approve:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    if: github.actor == 'gha-template-repo-token-generator' || github.actor == 'renovate[bot]' || github.actor == 'apps/renovate'
+    steps:
+      - uses: hmarr/auto-approve-action@v3
