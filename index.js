@@ -34,7 +34,7 @@ async function run() {
     }
 
     // Suffix comment with hidden value to check for updating later.
-    const commentIdSuffix = `\n\n\n<hidden purpose="for-rewritable-pr-comment-action-use" value="${comment_id}"></hidden>`;
+    const commentIdSuffix = `<hidden purpose="for-rewritable-pr-comment-action-use" value="${comment_id}"></hidden>`;
 
     // If comment already exists, get the comment ID.
     const existingCommentId = await checkForExistingComment(
