@@ -13,6 +13,6 @@ jobs:
     timeout-minutes: 5
     permissions:
       pull-requests: write
-    if: github.actor == 'gha-template-repo-token-generator' || github.actor == 'renovate[bot]' || github.actor == 'apps/renovate'
+    if: github.actor == 'gha-template-repo-token-generator' # || github.actor == 'renovate[bot]' || github.actor == 'apps/renovate'
     steps:
       - uses: hmarr/auto-approve-action@v3
