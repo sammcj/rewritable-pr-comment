@@ -32,7 +32,7 @@ jobs:
       - name: Cache node modules
         id: cache-npm
         continue-on-error: true
-        uses: actions/cache@v3
+        uses: actions/cache@58c146cc91c5b9e778e71775dfe9bf1442ad9a12 # v3
         env:
           cache-name: cache-node-modules
         with:
