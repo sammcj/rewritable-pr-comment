@@ -8,6 +8,10 @@ const octokit = new Octokit({
   auth: githubToken,
 });
 
+// Support both issue and pull_request events
+const issueType = context.payload.issue ? 'issue' : 'pull_request';
+const issueNumber = context.payload[issueType].number;
+
 // if inputs are in uppercase change them to lowercase
 const inputs = {
   debug: core.getInput('debug') ? core.getInput('debug') : false,
@@ -15,9 +19,8 @@ const inputs = {
   comment_identifier: core.getInput('comment_identifier')
     ? core.getInput('comment_identifier')
     : '4YE2JbpAewMX4rxmRnWyoSXoAfaiZH19QDB2IR3OSJTxmjSu',
-  issue_id: core.getInput('issue_id')
-    ? core.getInput('issue_id')
-    : context.payload.issue.number || context.payload.pull_request.number,
+
+  issue_id: core.getInput('issue_id') ? core.getInput('issue_id') : issueNumber,
 };
 
 async function run() {
