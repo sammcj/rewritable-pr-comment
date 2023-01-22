@@ -1,6 +1,8 @@
-name: Auto approve
+name: Auto approve gha-template-repo-token-generator PRs # and renovate
 
-on: pull_request_target
+on:
+  pull_request_target: #Disabling on PRs for now
+  workflow_dispatch:
 
 # One build per branch, cancel out of date builds
 concurrency:
