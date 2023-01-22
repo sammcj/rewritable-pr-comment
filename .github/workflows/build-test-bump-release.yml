@@ -69,17 +69,17 @@ jobs:
 
       # Bump version
       - name: Bump version and push tag
-        if: ${{ github.ref == 'refs/heads/main' }}
+        if: ${{ github.ref == 'refs/heads/main' }} && ${{ github.actor == 'sammcj' }}}
         id: tag_version
         uses: mathieudutour/github-tag-action@fcfbdceb3093f6d85a3b194740f8c6cec632f4e2 # tag=v6.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          release_branches: main
-          pre_release_branches: dev
+          release_branches: DISABLED
+          pre_release_branches: main # dev
 
       # Publish
       - name: Create a GitHub release
-        if: ${{ github.ref == 'refs/heads/main' }}
+        if: ${{ github.ref == 'refs/heads/main' }}  && ${{ github.actor == 'sammcj' }}}
         uses: ncipollo/release-action@a2e71bdd4e7dab70ca26a852f29600c98b33153e # v1
         with:
           tag: ${{ steps.tag_version.outputs.new_tag }}
