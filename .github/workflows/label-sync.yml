@@ -6,6 +6,11 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "30 4 * * *"
+  push:
+    files:
+      - .github/config/labels.yml
+      - .github/config/labeller.yml
+      - .github/workflows/label-sync.yml
 
 permissions:
   pull-requests: write
