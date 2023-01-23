@@ -15,10 +15,6 @@ if (inputs.debug) {
 // If the action is run on a pull request, use the pull request number. Otherwise, use the issue number.
 const isPR = context.eventName == 'pull_request';
 
-if (inputs.debug) {
-  console.log('isPR:', isPR);
-}
-
 // Target is either of type issue or PR.
 // If it is an issue it must be provided as input.
 const contextTargetNumber = isPR ? context.payload.pull_request.number : core.getInput('issue_id');
@@ -36,6 +32,10 @@ const inputs = {
 
   issue_id: targetNumber,
 };
+
+if (inputs.debug) {
+  console.log('isPR:', isPR);
+}
 
 async function run() {
   try {
