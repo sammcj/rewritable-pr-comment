@@ -59,13 +59,22 @@ jobs:
 
       # Test
       - uses: ./
-        name: "test this action"
+        name: "test this action with an issue"
         with:
           debug: "true"
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          message: "test message"
+          message: "test message on an issue"
           issue_id: 2
           comment_identifier: "test-output-comment-rewritable-action"
+
+      - uses: ./
+        name: "test this action with a PR"
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          debug: "true"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          message: "test message on a PR"
+          comment_identifier: "test-output-comment-rewritable-action-PR"
 
       # Bump version
       - name: Bump version and push tag
