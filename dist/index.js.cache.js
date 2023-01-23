@@ -12091,23 +12091,13 @@ async function run() {
     } else {
       try {
         console.log('Creating new comment');
-        if (isPR) {
-          // Create a new comment on the PR.
-          await octokit.rest.pulls.createReviewComment({
-            owner: owner,
-            repo: repo,
-            pull_number: targetNumber,
-            body: commentBody,
-          });
-        } else {
-          // Create a new comment on the issue.
-          await octokit.rest.issues.createComment({
-            owner: owner,
-            repo: repo,
-            issue_number: targetNumber,
-            body: commentBody,
-          });
-        }
+        // Create a new comment on the issue.
+        await octokit.rest.issues.createComment({
+          owner: owner,
+          repo: repo,
+          issue_number: targetNumber,
+          body: commentBody,
+        });
       } catch (error) {
         console.log(error);
       }
