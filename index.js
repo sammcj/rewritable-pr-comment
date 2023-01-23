@@ -67,7 +67,7 @@ async function run() {
     let comment = undefined;
 
     // If comment already exists, update it. Otherwise, create a new comment.
-    if (existingCommentId) {
+    if (existingCommentId !== null) {
       console.log('Existing comment found');
       if (inputs.debug) {
         console.log('existing comment ID:', existingCommentId);
@@ -147,6 +147,8 @@ async function run() {
 async function checkForExistingComment(octokit, targetNumber, comment_id, context) {
   const owner = context.repo.owner;
   const repo = context.repo.repo;
+  let existingCommentId = null;
+
   // Check for an existing comment with the comment_id and returns the comment ID if it exists.
   console.log('Checking for existing comment');
 
@@ -182,14 +184,14 @@ async function checkForExistingComment(octokit, targetNumber, comment_id, contex
     // Check if the comment_id is in the comment body.
     if (Array.isArray(existingComments.data)) {
       existingComments.data.forEach(({ body, id }) => {
-        if (body.includes(comment_id)) comment_id = id;
+        if (body.includes(comment_id)) existingCommentId = id;
       });
 
       if (inputs.debug) {
-        console.log(`comment_id: ${comment_id}`);
+        console.log(`existingCommentId: ${existingCommentId}`);
       }
     }
-    return comment_id;
+    return existingCommentId;
   } catch (e) {
     if (inputs.debug) {
       console.log('debug', inputs.debug);
