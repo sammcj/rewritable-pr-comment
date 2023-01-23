@@ -12103,7 +12103,7 @@ async function run() {
       }
     }
 
-    core.setOutput('comment-id', comment.data.id);
+    core.setOutput('comment-id', existingCommentId);
   } catch (e) {
     core.setFailed(e.message);
   }
