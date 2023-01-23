@@ -12012,15 +12012,6 @@ const inputs = {
   issue_id: targetNumber,
 };
 
-if (inputs.debug) {
-  console.log('debug enabled');
-  console.log(context);
-}
-
-if (!targetNumber) {
-  core.setFailed('Action must run on a Pull Request, or provided an issue_id.');
-}
-
 async function run() {
   try {
     const commentMessage = inputs.message;
@@ -12028,8 +12019,17 @@ async function run() {
     const owner = context.repo.owner;
     const repo = context.repo.repo;
 
+    if (inputs.debug) {
+      console.log('debug enabled');
+      console.log(context);
+    }
+
     // Suffix comment with hidden value to check for updating later.
     const commentIdSuffix = `<hidden purpose="for-rewritable-pr-comment-action-use" value="${comment_id}"></hidden>`;
+
+    if (!targetNumber) {
+      core.setFailed('Action must run on a Pull Request, or provided an issue_id.');
+    }
 
     // Check for an existing comment, if it already exists, get the comment ID.
     const existingCommentId = await checkForExistingComment(
