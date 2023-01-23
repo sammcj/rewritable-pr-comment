@@ -11976,21 +11976,27 @@ var __webpack_exports__ = {};
 const core = __webpack_require__(2186);
 const { Octokit } = __webpack_require__(5375);
 const { context } = __webpack_require__(5438);
-
 const githubToken = core.getInput('github_token');
 
 const octokit = new Octokit({
   auth: githubToken,
 });
 
+if (inputs.debug) {
+  console.log('debug enabled');
+  console.log(context);
+}
+
 // If the action is run on a pull request, use the pull request number. Otherwise, use the issue number.
-const isPR = context.eventName === 'pull_request';
+const isPR = context.eventName == 'pull_request';
+
+if (inputs.debug) {
+  console.log('isPR:', isPR);
+}
 
 // Target is either of type issue or PR.
-// This could be from the github context or provided as input.
-const contextTargetNumber = isPR
-  ? context.payload.pull_request.number
-  : context.payload.issue.number;
+// If it is an issue it must be provided as input.
+const contextTargetNumber = isPR ? context.payload.pull_request.number : core.getInput('issue_id');
 
 const targetNumber =
   core.getInput('issue_id') !== null ? core.getInput('issue_id') : contextTargetNumber;
@@ -12011,17 +12017,16 @@ if (inputs.debug) {
   console.log(context);
 }
 
+if (!targetNumber) {
+  core.setFailed('Action must run on a Pull Request, or provided an issue_id.');
+}
+
 async function run() {
   try {
     const commentMessage = inputs.message;
     const comment_id = inputs.comment_identifier;
     const owner = context.repo.owner;
     const repo = context.repo.repo;
-
-    if (!targetNumber) {
-      core.setFailed('Action must run on a Pull Request.');
-      return;
-    }
 
     // Suffix comment with hidden value to check for updating later.
     const commentIdSuffix = `<hidden purpose="for-rewritable-pr-comment-action-use" value="${comment_id}"></hidden>`;
