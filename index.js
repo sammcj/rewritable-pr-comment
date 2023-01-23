@@ -8,6 +8,12 @@ const octokit = new Octokit({
   auth: githubToken,
 });
 
+// If the action is run on a pull request, use the pull request number. Otherwise, use the issue number.
+const isPR = context.eventName === 'pull_request';
+const contextIssueNumber = isPR
+  ? context.payload.pull_request.number
+  : context.payload.issue.number;
+
 // if inputs are in uppercase change them to lowercase
 const inputs = {
   debug: core.getInput('debug') ? core.getInput('debug') : false,
@@ -15,9 +21,9 @@ const inputs = {
   comment_identifier: core.getInput('comment_identifier')
     ? core.getInput('comment_identifier')
     : '4YE2JbpAewMX4rxmRnWyoSXoAfaiZH19QDB2IR3OSJTxmjSu',
-  issue_id: core.getInput('issue_id')
-    ? core.getInput('issue_id')
-    : context.payload.issue.number || context.payload.pull_request.number,
+
+  // If issue_id is not provided, use the issue number from the context.
+  issue_id: core.getInput('issue_id') !== null ? core.getInput('issue_id') : contextIssueNumber,
 };
 
 if (inputs.debug) {
