@@ -20,6 +20,11 @@ const inputs = {
     : context.payload.issue.number || context.payload.pull_request.number,
 };
 
+if (inputs.debug) {
+  console.log('debug enabled');
+  console.log(context);
+}
+
 async function run() {
   try {
     const commentMessage = inputs.message;
