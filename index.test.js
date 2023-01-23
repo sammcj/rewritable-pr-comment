@@ -23,6 +23,7 @@ describe('index.js tests', () => {
       issue: {
         number: 1,
       },
+      eventName: 'pull_request',
     };
   });
   it('creates a new comment if one does not exist', async () => {
