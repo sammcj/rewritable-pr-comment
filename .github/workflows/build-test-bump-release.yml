@@ -63,7 +63,7 @@ jobs:
         with:
           debug: "true"
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          message: "test message"
+          message: "test message on an issue"
           issue_id: 2
           comment_identifier: "test-output-comment-rewritable-action"
 
@@ -73,9 +73,8 @@ jobs:
         with:
           debug: "true"
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          message: "test message"
-          issue_id: 2
-          comment_identifier: "test-output-comment-rewritable-action"
+          message: "test message on a PR"
+          comment_identifier: "test-output-comment-rewritable-action-PR"
 
       # Bump version
       - name: Bump version and push tag
