@@ -63,7 +63,7 @@ jobs:
         with:
           debug: "true"
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          message: "test message on an issue"
+          message: "Successfully updated a comment on an issue"
           issue_id: 2
           comment_identifier: "test-output-comment-rewritable-action-ISSUE"
 
@@ -73,7 +73,7 @@ jobs:
         with:
           debug: "true"
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          message: "test message on a PR"
+          message: "Successfully added a comment to a PR"
           comment_identifier: "test-output-comment-rewritable-action-PR"
 
       # Bump version
