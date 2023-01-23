@@ -11990,7 +11990,9 @@ const isPR = context.eventName == 'pull_request';
 const contextTargetNumber = isPR ? context.payload.pull_request.number : core.getInput('issue_id');
 
 const targetNumber =
-  core.getInput('issue_id') !== null ? core.getInput('issue_id') : contextTargetNumber;
+  core.getInput('issue_id') !== null && isPR === false
+    ? core.getInput('issue_id')
+    : contextTargetNumber;
 
 // if inputs are in uppercase change them to lowercase
 const inputs = {
