@@ -11976,7 +11976,6 @@ var __webpack_exports__ = {};
 const core = __webpack_require__(2186);
 const { Octokit } = __webpack_require__(5375);
 const { context } = __webpack_require__(5438);
-
 const githubToken = core.getInput('github_token');
 
 const octokit = new Octokit({
@@ -11984,16 +11983,16 @@ const octokit = new Octokit({
 });
 
 // If the action is run on a pull request, use the pull request number. Otherwise, use the issue number.
-const isPR = context.eventName === 'pull_request';
+const isPR = context.eventName == 'pull_request';
 
 // Target is either of type issue or PR.
-// This could be from the github context or provided as input.
-const contextTargetNumber = isPR
-  ? context.payload.pull_request.number
-  : context.payload.issue.number;
+// If it is an issue it must be provided as input.
+const contextTargetNumber = isPR ? context.payload.pull_request.number : core.getInput('issue_id');
 
 const targetNumber =
-  core.getInput('issue_id') !== null ? core.getInput('issue_id') : contextTargetNumber;
+  core.getInput('issue_id') !== null && isPR === false
+    ? core.getInput('issue_id')
+    : contextTargetNumber;
 
 // if inputs are in uppercase change them to lowercase
 const inputs = {
@@ -12008,6 +12007,7 @@ const inputs = {
 
 if (inputs.debug) {
   console.log('debug enabled');
+  console.log('isPR:', isPR);
   console.log(context);
 }
 
@@ -12018,13 +12018,17 @@ async function run() {
     const owner = context.repo.owner;
     const repo = context.repo.repo;
 
-    if (!targetNumber) {
-      core.setFailed('Action must run on a Pull Request.');
-      return;
+    if (inputs.debug) {
+      console.log('debug enabled');
+      console.log(context);
     }
 
     // Suffix comment with hidden value to check for updating later.
     const commentIdSuffix = `<hidden purpose="for-rewritable-pr-comment-action-use" value="${comment_id}"></hidden>`;
+
+    if (!targetNumber) {
+      core.setFailed('Action must run on a Pull Request, or provided an issue_id.');
+    }
 
     // Check for an existing comment, if it already exists, get the comment ID.
     const existingCommentId = await checkForExistingComment(
@@ -12038,7 +12042,7 @@ async function run() {
     let comment = undefined;
 
     // If comment already exists, update it. Otherwise, create a new comment.
-    if (existingCommentId) {
+    if (existingCommentId !== null) {
       console.log('Existing comment found');
       if (inputs.debug) {
         console.log('existing comment ID:', existingCommentId);
@@ -12087,29 +12091,19 @@ async function run() {
     } else {
       try {
         console.log('Creating new comment');
-        if (isPR) {
-          // Create a new comment on the PR.
-          await octokit.rest.pulls.createReviewComment({
-            owner: owner,
-            repo: repo,
-            pull_number: targetNumber,
-            body: commentBody,
-          });
-        } else {
-          // Create a new comment on the issue.
-          await octokit.rest.issues.createComment({
-            owner: owner,
-            repo: repo,
-            issue_number: targetNumber,
-            body: commentBody,
-          });
-        }
+        // Create a new comment on the issue.
+        await octokit.rest.issues.createComment({
+          owner: owner,
+          repo: repo,
+          issue_number: targetNumber,
+          body: commentBody,
+        });
       } catch (error) {
         console.log(error);
       }
     }
 
-    core.setOutput('comment-id', comment.data.id);
+    core.setOutput('comment-id', existingCommentId);
   } catch (e) {
     core.setFailed(e.message);
   }
@@ -12118,6 +12112,8 @@ async function run() {
 async function checkForExistingComment(octokit, targetNumber, comment_id, context) {
   const owner = context.repo.owner;
   const repo = context.repo.repo;
+  let existingCommentId = null;
+
   // Check for an existing comment with the comment_id and returns the comment ID if it exists.
   console.log('Checking for existing comment');
 
@@ -12136,7 +12132,7 @@ async function checkForExistingComment(octokit, targetNumber, comment_id, contex
       existingComments = await octokit.rest.pulls.listReviewComments({
         owner: owner,
         repo: repo,
-        issue_number: targetNumber,
+        pull_number: targetNumber,
       });
     } else {
       // Get all comments on the issue.
@@ -12153,14 +12149,14 @@ async function checkForExistingComment(octokit, targetNumber, comment_id, contex
     // Check if the comment_id is in the comment body.
     if (Array.isArray(existingComments.data)) {
       existingComments.data.forEach(({ body, id }) => {
-        if (body.includes(comment_id)) comment_id = id;
+        if (body.includes(comment_id)) existingCommentId = id;
       });
 
       if (inputs.debug) {
-        console.log(`comment_id: ${comment_id}`);
+        console.log(`existingCommentId: ${existingCommentId}`);
       }
     }
-    return comment_id;
+    return existingCommentId;
   } catch (e) {
     if (inputs.debug) {
       console.log('debug', inputs.debug);
