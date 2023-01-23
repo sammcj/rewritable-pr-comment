@@ -165,7 +165,7 @@ async function checkForExistingComment(octokit, targetNumber, comment_id, contex
       existingComments = await octokit.rest.pulls.listReviewComments({
         owner: owner,
         repo: repo,
-        issue_number: targetNumber,
+        pull_number: targetNumber,
       });
     } else {
       // Get all comments on the issue.
