@@ -7,11 +7,6 @@ const octokit = new Octokit({
   auth: githubToken,
 });
 
-if (inputs.debug) {
-  console.log('debug enabled');
-  console.log(context);
-}
-
 // If the action is run on a pull request, use the pull request number. Otherwise, use the issue number.
 const isPR = context.eventName == 'pull_request';
 
@@ -34,7 +29,9 @@ const inputs = {
 };
 
 if (inputs.debug) {
+  console.log('debug enabled');
   console.log('isPR:', isPR);
+  console.log(context);
 }
 
 async function run() {
