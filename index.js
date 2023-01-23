@@ -20,10 +20,8 @@ if (inputs.debug) {
 }
 
 // Target is either of type issue or PR.
-// This could be from the github context or provided as input.
-const contextTargetNumber = isPR
-  ? context.payload.pull_request.number
-  : context.payload.issue.number;
+// If it is an issue it must be provided as input.
+const contextTargetNumber = isPR ? context.payload.pull_request.number : core.getInput('issue_id');
 
 const targetNumber =
   core.getInput('issue_id') !== null ? core.getInput('issue_id') : contextTargetNumber;
@@ -39,17 +37,21 @@ const inputs = {
   issue_id: targetNumber,
 };
 
+if (inputs.debug) {
+  console.log('debug enabled');
+  console.log(context);
+}
+
+if (!targetNumber) {
+  core.setFailed('Action must run on a Pull Request, or provided an issue_id.');
+}
+
 async function run() {
   try {
     const commentMessage = inputs.message;
     const comment_id = inputs.comment_identifier;
     const owner = context.repo.owner;
     const repo = context.repo.repo;
-
-    if (!targetNumber) {
-      core.setFailed('Action must run on a Pull Request.');
-      return;
-    }
 
     // Suffix comment with hidden value to check for updating later.
     const commentIdSuffix = `<hidden purpose="for-rewritable-pr-comment-action-use" value="${comment_id}"></hidden>`;
