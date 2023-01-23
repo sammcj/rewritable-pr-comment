@@ -10,9 +10,15 @@ const octokit = new Octokit({
 
 // If the action is run on a pull request, use the pull request number. Otherwise, use the issue number.
 const isPR = context.eventName === 'pull_request';
-const contextIssueNumber = isPR
+
+// Target is either of type issue or PR.
+// This could be from the github context or provided as input.
+const contextTargetNumber = isPR
   ? context.payload.pull_request.number
   : context.payload.issue.number;
+
+const targetNumber =
+  core.getInput('issue_id') !== null ? core.getInput('issue_id') : contextTargetNumber;
 
 // if inputs are in uppercase change them to lowercase
 const inputs = {
@@ -22,8 +28,7 @@ const inputs = {
     ? core.getInput('comment_identifier')
     : '4YE2JbpAewMX4rxmRnWyoSXoAfaiZH19QDB2IR3OSJTxmjSu',
 
-  // If issue_id is not provided, use the issue number from the context.
-  issue_id: core.getInput('issue_id') !== null ? core.getInput('issue_id') : contextIssueNumber,
+  issue_id: targetNumber,
 };
 
 if (inputs.debug) {
@@ -34,12 +39,11 @@ if (inputs.debug) {
 async function run() {
   try {
     const commentMessage = inputs.message;
-    const issue_number = inputs.issue_id;
     const comment_id = inputs.comment_identifier;
     const owner = context.repo.owner;
     const repo = context.repo.repo;
 
-    if (!issue_number) {
+    if (!targetNumber) {
       core.setFailed('Action must run on a Pull Request.');
       return;
     }
@@ -47,10 +51,10 @@ async function run() {
     // Suffix comment with hidden value to check for updating later.
     const commentIdSuffix = `<hidden purpose="for-rewritable-pr-comment-action-use" value="${comment_id}"></hidden>`;
 
-    // If comment already exists, get the comment ID.
+    // Check for an existing comment, if it already exists, get the comment ID.
     const existingCommentId = await checkForExistingComment(
       octokit,
-      issue_number,
+      targetNumber,
       comment_id,
       context,
     );
@@ -64,36 +68,67 @@ async function run() {
       if (inputs.debug) {
         console.log('existing comment ID:', existingCommentId);
         try {
-          const existingComment = await octokit.rest.issues.getComment({
-            owner: owner,
-            repo: repo,
-            comment_id: existingCommentId,
-          });
+          let existingComment = undefined;
+          if (isPR) {
+            // Get all comments on the PR.
+            existingComment = await octokit.rest.pulls.getReviewComment({
+              owner: owner,
+              repo: repo,
+              comment_id: existingCommentId,
+            });
+          } else {
+            existingComment = await octokit.rest.issues.getComment({
+              owner: owner,
+              repo: repo,
+              comment_id: existingCommentId,
+            });
+          }
           console.log(existingComment);
         } catch (error) {
           console.log(error);
         }
       }
-
       try {
-        comment = await octokit.rest.issues.updateComment({
-          owner: owner,
-          repo: repo,
-          comment_id: existingCommentId,
-          body: commentBody,
-        });
+        if (isPR) {
+          // Get all comments on the PR.
+          await octokit.rest.pulls.updateReviewComment({
+            owner: owner,
+            repo: repo,
+            comment_id: existingCommentId,
+            body: commentBody,
+          });
+        } else {
+          // Get all comments on the issue.
+          await octokit.rest.issues.updateComment({
+            owner: owner,
+            repo: repo,
+            comment_id: existingCommentId,
+            body: commentBody,
+          });
+        }
       } catch (error) {
         console.log(error);
       }
     } else {
       try {
         console.log('Creating new comment');
-        comment = await octokit.rest.issues.createComment({
-          owner: owner,
-          repo: repo,
-          issue_number: issue_number,
-          body: commentBody,
-        });
+        if (isPR) {
+          // Create a new comment on the PR.
+          await octokit.rest.pulls.createReviewComment({
+            owner: owner,
+            repo: repo,
+            pull_number: targetNumber,
+            body: commentBody,
+          });
+        } else {
+          // Create a new comment on the issue.
+          await octokit.rest.issues.createComment({
+            owner: owner,
+            repo: repo,
+            issue_number: targetNumber,
+            body: commentBody,
+          });
+        }
       } catch (error) {
         console.log(error);
       }
@@ -105,7 +140,7 @@ async function run() {
   }
 }
 
-async function checkForExistingComment(octokit, issue_number, comment_id, context) {
+async function checkForExistingComment(octokit, targetNumber, comment_id, context) {
   const owner = context.repo.owner;
   const repo = context.repo.repo;
   // Check for an existing comment with the comment_id and returns the comment ID if it exists.
@@ -115,17 +150,27 @@ async function checkForExistingComment(octokit, issue_number, comment_id, contex
     console.log('debug enabled');
     console.log(`owner: ${owner}`);
     console.log(`repo: ${repo}`);
-    console.log(`issue_number: ${issue_number}`);
+    console.log(`targetNumber: ${targetNumber}`);
     console.log(`comment_id: ${comment_id}`);
   }
 
   try {
-    // Get all comments on the issue.
-    const existingComments = await octokit.rest.issues.listComments({
-      owner: owner,
-      repo: repo,
-      issue_number: issue_number,
-    });
+    let existingComments = undefined;
+    if (isPR) {
+      // Get all comments on the PR.
+      existingComments = await octokit.rest.pulls.listReviewComments({
+        owner: owner,
+        repo: repo,
+        issue_number: targetNumber,
+      });
+    } else {
+      // Get all comments on the issue.
+      existingComments = await octokit.rest.issues.listComments({
+        owner: owner,
+        repo: repo,
+        issue_number: targetNumber,
+      });
+    }
 
     if (inputs.debug) {
       console.log('existingComments data:', existingComments.data);
