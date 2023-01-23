@@ -1,15 +1,23 @@
 const core = require('@actions/core');
 const { Octokit } = require('@octokit/rest');
 const { context } = require('@actions/github');
-
 const githubToken = core.getInput('github_token');
 
 const octokit = new Octokit({
   auth: githubToken,
 });
 
+if (inputs.debug) {
+  console.log('debug enabled');
+  console.log(context);
+}
+
 // If the action is run on a pull request, use the pull request number. Otherwise, use the issue number.
-const isPR = context.eventName === 'pull_request';
+const isPR = context.eventName == 'pull_request';
+
+if (inputs.debug) {
+  console.log('isPR:', isPR);
+}
 
 // Target is either of type issue or PR.
 // This could be from the github context or provided as input.
@@ -30,11 +38,6 @@ const inputs = {
 
   issue_id: targetNumber,
 };
-
-if (inputs.debug) {
-  console.log('debug enabled');
-  console.log(context);
-}
 
 async function run() {
   try {
