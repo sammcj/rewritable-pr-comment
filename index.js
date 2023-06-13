@@ -64,7 +64,6 @@ async function run() {
     );
 
     const commentBody = commentMessage + commentIdSuffix;
-    let comment = undefined;
 
     // If comment already exists, update it. Otherwise, create a new comment.
     if (existingCommentId !== null) {

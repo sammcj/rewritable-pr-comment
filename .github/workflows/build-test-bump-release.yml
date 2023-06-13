@@ -58,6 +58,11 @@ jobs:
           # npm run test
 
       # Test
+
+      - name: "Run NPM Tests"
+        run: |
+          npm run test
+
       - uses: ./
         name: "test this action with an issue"
         with:
